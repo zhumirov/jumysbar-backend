@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="tkachev" id="2020-04-04-1">
+        <sql>
+            CREATE TABLE section (
+                id integer primary key,
+                user_id integer REFERENCES user_ed(id),
+                event_id integer REFERENCES event(id),
+                title varchar,
+                description varchar,
+                subsections_p varchar,
+                tests_p varchar,
+                created_date timestamp
+            );
+            CREATE SEQUENCE section_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-04-2">
+        <sql>
+            CREATE TABLE subsection (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            section_id integer REFERENCES section(id),
+            title varchar,
+            description varchar,
+            units varchar,
+            types varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE subsection_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-04-3">
+        <sql>
+            CREATE TABLE test (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            section_id integer REFERENCES section(id),
+            text varchar,
+            options varchar,
+            answers varchar,
+            type varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE test_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-04-5">
+        <sql>
+            ALTER TABLE section
+            ADD COLUMN position integer;
+            ALTER TABLE subsection
+            ADD COLUMN position integer;
+            ALTER TABLE test
+            ADD COLUMN position integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-15-1">
+        <sql>
+            ALTER TABLE section
+            DROP COLUMN subsections_p;
+            ALTER TABLE section
+            DROP COLUMN tests_p;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-15-2">
+        <sql>
+            CREATE TABLE event_progress (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer REFERENCES event(id),
+            subsections varchar,
+            tests varchar,
+            created_date timestamp,
+            UNIQUE (user_id, event_id)
+            );
+            CREATE SEQUENCE progress_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-27-1">
+        <sql>
+            CREATE TABLE org_subscription (
+            id integer primary key,
+            user_id integer not null REFERENCES user_ed(id),
+            price integer,
+            duration integer,
+            start_date timestamp,
+            end_date timestamp,
+            created_date timestamp
+            );
+            CREATE SEQUENCE org_sub_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-27-2">
+        <sql>
+            ALTER TABLE order_ed
+            ADD COLUMN order_type varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-27-3">
+        <sql>
+            update order_ed set order_type = 'SUBSCRIPTION';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-27-4">
+        <sql>
+            CREATE TABLE org_order_ed (
+            id integer primary key,
+            user_id integer not null REFERENCES user_ed(id),
+            order_id integer not null REFERENCES order_ed(id),
+            price integer,
+            duration integer,
+            start_date timestamp,
+            end_date timestamp,
+            created_date timestamp
+            );
+            CREATE SEQUENCE org_order_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-03-3">
+        <sql>
+            ALTER TABLE event_progress
+            ADD COLUMN subsections_size integer default 0;
+            ALTER TABLE event_progress
+            ADD COLUMN tests_size integer default 0;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-03-4">
+        <sql>
+            ALTER TABLE section
+            ADD COLUMN subsections_size integer default 0;
+            ALTER TABLE section
+            ADD COLUMN tests_size integer default 0;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-1">
+        <sql>
+            ALTER TABLE subsection
+            ADD COLUMN units_temp jsonb;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-2">
+        <sql>
+            ALTER TABLE test
+            ADD COLUMN options_temp jsonb;
+            ALTER TABLE test
+            ADD COLUMN answers_temp jsonb;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-3">
+        <sql>
+            ALTER TABLE event_progress
+            ADD COLUMN tests_temp jsonb;
+            ALTER TABLE event_progress
+            ADD COLUMN subsections_temp jsonb;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-49">
+        <sql>
+            ALTER TABLE subsection
+            DROP COLUMN units;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-41">
+        <sql>
+            ALTER TABLE subsection
+            DROP COLUMN types;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-59">
+        <sql>
+            ALTER TABLE test
+            DROP COLUMN options;
+            ALTER TABLE test
+            DROP COLUMN answers;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-69">
+        <sql>
+            ALTER TABLE event_progress
+            DROP COLUMN tests;
+            ALTER TABLE event_progress
+            DROP COLUMN subsections;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-7">
+        <sql>
+            ALTER TABLE subsection
+            RENAME COLUMN units_temp to units;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-8">
+        <sql>
+            ALTER TABLE test
+            RENAME COLUMN options_temp to options;
+            ALTER TABLE test
+            RENAME COLUMN answers_temp to answers;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-05-9">
+        <sql>
+            ALTER TABLE event_progress
+            RENAME COLUMN tests_temp to tests;
+            ALTER TABLE event_progress
+            RENAME COLUMN subsections_temp to subsections;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-23-1">
+        <sql>
+            CREATE TABLE certificate (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer REFERENCES event(id),
+            finished_date timestamp,
+            created_date timestamp
+            );
+            CREATE SEQUENCE cert_seq;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

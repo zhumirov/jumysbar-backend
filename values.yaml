@@ -1,0 +1,95 @@
+replicaCount: 1
+
+image:
+  repository: nexus.btsd.kz:5000/edu/jumysbar/jumysbar-services
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+
+ports:
+  - name: diag
+    port: 60001
+  - name: main
+    port: 8080
+    timeout_ms: 60000
+    prefixes:
+      - /api
+
+Probes:
+  liveness:
+    path: /api/actuator/health/liveness
+    port: main
+  readiness:
+    path: /api/actuator/health/readiness
+    port: main
+EnvVars:
+  JSON_LOGGER_ENABLED: true
+
+#  SPRING_SECURITY_JWT_SECRETKEY:
+#    mapName: "jumysbar-configmap"
+
+  POSTGRES_PASSWORD:
+    mapName: "jumysbar-configmap"
+  POSTGRES_USERNAME:
+    mapName: "jumysbar-configmap"
+  POSTGRES_URL:
+    mapName: "jumysbar-configmap"
+
+  ELASTICSEARCH_URL:
+    mapName: "jumysbar-configmap"
+  ELASTICSEARCH_USERNAME:
+    mapName: "jumysbar-configmap"
+  ELASTICSEARCH_PASSWORD:
+    mapName: "jumysbar-configmap"
+
+#  EMAIL_HOST:
+#    mapName: "jumysbar-configmap"
+#  EMAIL_PORT:
+#    mapName: "jumysbar-configmap"
+#  EMAIL_USERNAME:
+#    mapName: "jumysbar-configmap"
+#  EMAIL_PASSWORD:
+#    mapName: "jumysbar-configmap"
+#  SMS_ENABLED:
+#    mapName: "jumysbar-configmap"
+#  SMS_LOGIN:
+#    mapName: "jumysbar-configmap"
+#  SMS_PASSWORD:
+#    mapName: "jumysbar-configmap"
+#  EMAIL_ENABLED:
+#    mapName: "jumysbar-configmap"
+#  EDMARKET_SITE_URL:
+#    mapName: "jumysbar-configmap"
+#  EDMARKET_BACKEND_URL:
+#    mapName: "jumysbar-configmap"
+#  ECOMMERCE24_DEMO:
+#    mapName: "jumysbar-configmap"
+#  ECOMMERCE24_URL:
+#    mapName: "jumysbar-configmap"
+#  ECOMMERCE24_USERNAME:
+#    mapName: "jumysbar-configmap"
+#  ECOMMERCE24_PASSWORD:
+#    mapName: "jumysbar-configmap"
+#  ECOMMERCE24_CALLBACK_URL:
+#    mapName: "jumysbar-configmap"
+#  ECOMMERCE24_RETURN_URL:
+#    mapName: "jumysbar-configmap"
+#  AITU_PASSPORT_AUTH_TOKEN:
+#    mapName: "jumysbar-configmap"
+#  AITU_PASSPORT_URL:
+#    mapName: "jumysbar-configmap"
+#  AITU_PASSPORT_REDIRECT_URL:
+#    mapName: "jumysbar-configmap"
+
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+ambassador:
+  enabled: true

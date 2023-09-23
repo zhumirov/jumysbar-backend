@@ -1,0 +1,5 @@
+EnvVars:
+  SPRING_PROFILES_ACTIVE: "development"
+
+ambassador:
+  routingHost: "dev.jumysbar.kz"

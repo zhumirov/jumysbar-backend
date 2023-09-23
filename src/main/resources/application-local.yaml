@@ -1,0 +1,65 @@
+spring.profiles: local
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jumysbar-db
+    username: postgres
+    password: postgres
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
+      password:
+      username:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hello.jumysbar@gmail.com
+    password: kxsjubjzvairhejk
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+  security.jwt.secret-key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+  jpa:
+    show-sql: true
+jumysbar:
+  online-kassa:
+    enabled: false
+    url: https://api.fiscalv2.stage.tech24.kz
+    username: 77009008000
+    password: 123qwerty
+    kkm: 19074
+  webkassa:
+    enabled: false
+    url: https://devkkm.webkassa.kz/api
+    login: dastan.aspan@bts-education.kz
+    password: Kassa123
+    x-api-key: WKD-6AF55157-4ED8-4084-A0D1-CC8CEE8E90AC
+    cashbox: SWK00032932
+  sms:
+    enabled: false
+    login:
+    password:
+  email:
+    enabled: false
+    photo.default: https://edmarketblog.s3.eu-north-1.amazonaws.com/default.png
+  bitrix:
+    enabled: true
+  site.url: https://dev.jumysbar.kz
+  backend.url: https://dev.jumysbar.kz/api
+  subscription:
+    demo: true
+  ecommerce24:
+    demo: true
+    url: https://ecommerce.pult24.kz/payment/create
+    username: 12125184625115378
+    password: y49PUg2nDt9MBSBbYK64
+    callback-url: https://dev.jumysbar.kz/api/subscriptions/result
+    return-url: https://dev.jumysbar.kz/api
+  aitu-passport:
+    authorization: Basic NTdkOGI2OTItOGZiNi00Yzg1LWE1NGItNzFkOTkyMWU1ZGIyOjVCekVVUnR2MVZzYXczSjhnYjFkYTh5QzFsQk5xd29uTXNySU1LUzh3QWJmN3NBREZRMGN1WkV1a2tSVlNaVk4=
+    url: https://passport.aitu.io/oauth2/token
+    logout-url: https://passport.aitu.io/sessions/logout
+    state: edmjumysbar
+    redirect_uri: https://dev.jumysbar.kz/
+    redirect_uri_ergdu: https://dev.jumysbar.kz/
+errors:
+  trace:
+    enabled: true

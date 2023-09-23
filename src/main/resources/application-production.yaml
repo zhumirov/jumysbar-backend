@@ -1,0 +1,63 @@
+spring.profiles: production
+spring:
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+  elasticsearch:
+    rest:
+      uris: http://s3861.j:9200
+      password:
+      username:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hello.jumysbar@gmail.com
+    password: kxsjubjzvairhejk
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+  security.jwt.secret-key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+jumysbar:
+  online-kassa:
+    enabled: true
+    url: https://fiscal2.kassa24.kz
+    username: 77012049091
+    password: Aa1234
+    kkm: 43021
+  webkassa:
+    enabled: false
+    url: https://devkkm.webkassa.kz/api
+    login: dastan.aspan@bts-education.kz
+    password: Kassa123
+    x-api-key: WKD-6AF55157-4ED8-4084-A0D1-CC8CEE8E90AC
+    cashbox: SWK00032932
+  sms:
+    enabled: true
+    login: Edmarket_kz
+    password: edmarket2019
+  email:
+    enabled: true
+    photo.default: https://edmarketblog.s3.eu-north-1.amazonaws.com/default.png
+  bitrix:
+    enabled: true
+  site.url: https://aitu.jumysbar.kz
+  backend.url: https://go.jumysbar.kz/api
+  subscription:
+    demo: false
+  ecommerce24:
+    demo: false
+    url: https://ecommerce.pult24.kz/payment/create
+    username: 12125188175790371
+    password: 3G5Y25PrQyG3FMcp2tFe
+    callback-url: https://go.jumysbar.kz/api/subscriptions/result
+    return-url: https://go.jumysbar.kz/api
+  aitu-passport:
+    authorization: Basic ZTA1N2MyYmYtYTA5Mi00NTFlLWEyNDItM2FkMGFlNjQ2ZGNlOnI1UG9McFRPTW1LSDQ0c1JucWlaYWZxcXBHT1R2MHVTbnlTZER0ZklOS2xWNm9yeGlGVkhvbkdjdm9yNWk3djk=
+    url: https://passport.aitu.io/oauth2/token
+    logout-url: https://passport.aitu.io/sessions/logout
+    state: edmjumysbar
+    redirect_uri: https://aitu.jumysbar.kz/
+    redirect_uri_ergdu: https://ergdu.jumysbar.kz/
+errors:
+  trace:
+    enabled: true

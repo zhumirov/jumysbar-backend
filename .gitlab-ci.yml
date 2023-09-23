@@ -1,0 +1,48 @@
+include:
+  - 'https://gitlab.btsd.kz/cicd/common/raw/master/.build.yml'
+  - 'https://gitlab.btsd.kz/cicd/common/raw/master/.variables.yml'
+  - 'https://gitlab.btsd.kz/cicd/common/raw/master/.registry.yml'
+  - 'https://gitlab.btsd.kz/cicd/common/raw/master/.deploy.yml'
+  - 'https://gitlab.btsd.kz/cicd/common/raw/master/.security.yml'
+
+stages:
+  - build
+  - security
+  - registry
+  - deploy_dev
+  - deploy_stage
+  - deploy_prod
+
+variables:
+  CONTAINER_IMAGE: "nexus.btsd.kz:5000/edu/jumysbar/jumysbar-services:${CI_PIPELINE_IID}"
+  CONTAINER_IMAGE_LATEST: "nexus.btsd.kz:5000/edu/jumysbar/jumysbar-services:latest"
+  RELEASE_NAME: "jumysbar-backend"
+  HELM_TIMEOUT: 500
+
+build:
+  stage: build
+  only:
+    - dev
+    - master
+
+registry:
+  stage: registry
+  only:
+    - dev
+    - master
+
+deploy_dev:
+  stage: deploy_dev
+  when: on_success
+  only:
+    - dev
+  tags:
+    - kube-minor-dev-education
+
+deploy_prod:
+  stage: deploy_prod
+  when: on_success
+  only:
+    - master
+  tags:
+    - kube-minor-prod-education

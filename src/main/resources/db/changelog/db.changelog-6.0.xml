@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="rus" id="2023-09-01-1">
+        <sql>
+            INSERT INTO user_ed (id, name, password, phone, email, created_date, file_id, specialization, information,
+                                 first_name, last_name, city, birthdate, activity, job, platform, user_role,
+                                 last_activity_date, email_confirmed, employee_id, company, position, system_password,
+                                 phone_confirmed, identifier, aitu_user_id, aitu_token_id, deleted)
+            VALUES (nextval('user_ed_seq'), 'admin', '$2a$12$rrKw8WmB7MIZf8GkkKep8uS2s71fgrb7AYFFYNxefLGAcGs8yNyj2', '+77017017011',
+                    'Jumys_Bar@gmail.com', '2021-02-23 07:45:19.673000', null, null, null, null, null, null, null, null,
+                    null,
+                    'JUMYSBAR', 'ADMIN', '2023-09-01 11:05:09.962000', true, null, null, null, false, true, null, null,
+                    null,
+                    false);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

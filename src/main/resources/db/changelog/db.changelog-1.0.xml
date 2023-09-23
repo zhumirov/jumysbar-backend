@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="tkachev" id="2020-03-26-1">
+        <sql>
+            CREATE TABLE user_ed (
+            id integer primary key,
+            name varchar,
+            password varchar,
+            phone varchar,
+            email varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE user_ed_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-03-26-2">
+        <sql>
+            CREATE TABLE event (
+            id integer primary key,
+            user_id integer not null REFERENCES user_ed(id),
+            type varchar,
+            title varchar,
+            short_Description varchar,
+            description varchar,
+            category varchar,
+            sub_Category varchar,
+            price varchar,
+            start_Date varchar,
+            start_Time varchar,
+            end_Date varchar,
+            end_Time varchar,
+            seats varchar,
+            city varchar,
+            address varchar,
+            course_Outline varchar,
+            acquired_Skills varchar,
+            certification varchar,
+            phone varchar,
+            email varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE event_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-03-26-3">
+        <sql>
+            CREATE TABLE subscription (
+            id integer primary key,
+            event_id integer not null REFERENCES event(id),
+            user_id integer REFERENCES user_ed(id),
+            title varchar,
+            name varchar,
+            phone varchar,
+            email varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE subscription_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-01-1">
+        <sql>
+            CREATE TABLE event_social_networks (
+            event_id integer not null REFERENCES event(id),
+            social_networks varchar
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-06-1">
+        <sql>
+            CREATE TABLE file_ed (
+            id integer primary key,
+            file_name varchar,
+            data bytea,
+            created_date timestamp
+            );
+            CREATE SEQUENCE file_ed_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-06-2">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN file_id integer REFERENCES file_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-06-3">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN file_id integer REFERENCES file_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-14-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN specialization varchar;
+            ALTER TABLE user_ed
+            ADD COLUMN information varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-14-2">
+        <sql>
+            CREATE TABLE registration (
+            id integer primary key,
+            phone varchar,
+            password varchar,
+            sms_code integer,
+            created_date timestamp
+            );
+            CREATE SEQUENCE registration_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-16-1">
+        <sql>
+            ALTER TABLE registration
+            DROP COLUMN IF EXISTS password;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-16-3">
+        <sql>
+            ALTER TABLE registration
+            ADD COLUMN confirmed boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-16-6">
+        <sql>
+            CREATE TABLE authority (
+            id integer primary key,
+            user_id integer not null REFERENCES user_ed(id),
+            authority varchar not null
+            );
+            CREATE SEQUENCE authority_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-28-1">
+        <sql>
+            ALTER TABLE event
+            DROP COLUMN IF EXISTS price;
+            ALTER TABLE event
+            ADD COLUMN price integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-05-05-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD CONSTRAINT unique_phone UNIQUE (phone);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-05-18-3">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN start_date_time timestamp;
+            ALTER TABLE event
+            ADD COLUMN end_date_time timestamp;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-05-19-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN online boolean default true;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-05-20-0">
+        <sql>
+            ALTER TABLE event
+            DROP COLUMN IF EXISTS online;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-05-20-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN way varchar default 'ONLINE';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-06-12-1">
+        <sql>
+            CREATE TABLE payment (
+            id varchar primary key,
+            url varchar,
+            merchant_Id varchar,
+            amount integer,
+            order_id integer,
+            return_Url varchar,
+            callback_Url varchar,
+            description varchar,
+            metadata varchar,
+            demo boolean,
+            phone varchar,
+            email varchar,
+            created_date timestamp
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-06-12-2">
+        <sql>
+            CREATE TABLE payment_result (
+            id varchar primary key,
+            merchant_Id varchar,
+            amount integer,
+            commission integer,
+            commission_included boolean,
+            order_id integer,
+            attempt integer,
+            return_Url varchar,
+            callback_Url varchar,
+            description varchar,
+            metadata varchar,
+            demo boolean,
+            phone varchar,
+            email varchar,
+            date timestamp,
+            date_out timestamp,
+            status integer,
+            err_code integer,
+            err_message varchar,
+            created_date timestamp
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-06-12-3">
+        <sql>
+            CREATE TABLE order_ed (
+            id integer primary key,
+            event_id integer not null REFERENCES event(id),
+            user_id integer REFERENCES user_ed(id),
+            payment_id varchar REFERENCES payment(id),
+            payment_result_id varchar REFERENCES payment_result(id),
+            price integer,
+            created_date timestamp
+            );
+            CREATE SEQUENCE order_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-06-12-4">
+        <sql>
+            ALTER TABLE payment
+            ADD FOREIGN KEY (order_id) REFERENCES order_ed(id);
+            ALTER TABLE payment_result
+            ADD FOREIGN KEY (order_id) REFERENCES order_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-06-29-1">
+        <sql>
+            CREATE TABLE comment (
+            id integer primary key,
+            event_id integer not null REFERENCES event(id),
+            user_id integer REFERENCES user_ed(id),
+            text varchar,
+            rating integer,
+            created_date timestamp
+            );
+            CREATE SEQUENCE comment_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-07-07-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN external_url varchar;
+            ALTER TABLE event
+            ADD COLUMN external_org_info varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-07-07-2">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN external boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-07-28-1">
+        <sql>
+            CREATE TABLE promocode (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer not null REFERENCES event(id),
+            title varchar,
+            discount_type varchar,
+            discount_amount integer,
+            code_number_type varchar,
+            code_number integer,
+            promo_start_date varchar,
+            start_Date varchar,
+            start_Time varchar,
+            start_date_time timestamp,
+            created_date timestamp
+            );
+            CREATE SEQUENCE promocode_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-06-1">
+        <sql>
+            CREATE TABLE bank_details (
+            id integer primary key,
+            user_id integer UNIQUE REFERENCES user_ed(id),
+            company_name varchar,
+            bin varchar,
+            bic varchar,
+            iic varchar,
+            account_number varchar,
+            legal_address varchar,
+            address varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE bankd_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-06-2">
+        <sql>
+            CREATE TABLE transfer_money (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            bank_details_id integer REFERENCES bank_details(id),
+            amount integer,
+            created_date timestamp
+            );
+            CREATE SEQUENCE transferm_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-10-1">
+        <sql>
+            ALTER TABLE subscription
+            ADD COLUMN price integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-17-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN status varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-17-2">
+        <sql>
+            update event set status = 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-19-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN reason varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-19-2">
+        <sql>
+            update event set status = 'APPROVED' where status = 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-08-24-1">
+        <sql>
+            CREATE TABLE info_order (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            name varchar,
+            phone varchar,
+            message varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE info_order_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-14-2">
+        <sql>
+            CREATE TABLE email_message (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer REFERENCES event(id),
+            message varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE email_message_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-18-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN repeat_type varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-18-2">
+        <sql>
+            update event set repeat_type = 'SINGLE';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-28-1">
+        <sql>
+            ALTER TABLE promocode
+            ADD COLUMN general boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-28-2">
+        <sql>
+            ALTER TABLE order_ed
+            ADD COLUMN promocode_id integer REFERENCES order_ed(id);
+            ALTER TABLE order_ed
+            ADD COLUMN discount_type varchar;
+            ALTER TABLE order_ed
+            ADD COLUMN discount_amount integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-28-3">
+        <sql>
+            ALTER TABLE promocode
+            ALTER COLUMN event_Id drop not null;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-10-03-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN subsections_size integer default 0;
+            ALTER TABLE event
+            ADD COLUMN tests_size integer default 0;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-11-11-1">
+        <sql>
+            ALTER TABLE order_ed ALTER COLUMN event_id DROP NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-11-13-1">
+        <sql>
+            CREATE TABLE speaker (
+            id integer primary key,
+            user_id integer not null REFERENCES user_ed(id),
+            name varchar,
+            information varchar,
+            file_id integer REFERENCES file_ed(id),
+            created_date timestamp
+            );
+            CREATE SEQUENCE speaker_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-11-13-2">
+        <sql>
+            CREATE TABLE event_speakers (
+            event_id integer not null REFERENCES event(id),
+            speaker_id integer not null REFERENCES speaker(id)
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-11-26-1">
+        <sql>
+            ALTER TABLE transfer_money
+            ADD COLUMN status varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-11-26-2">
+        <sql>
+            update transfer_money set status = 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-10-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN webinar_url varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-10-2">
+        <sql>
+            ALTER TABLE transfer_money
+            ADD COLUMN other_details varchar;
+            ALTER TABLE transfer_money
+            ADD COLUMN other_format boolean;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-10-3">
+        <sql>
+            ALTER TABLE info_order
+            drop COLUMN user_id;
+            ALTER TABLE info_order
+            drop COLUMN name;
+            ALTER TABLE info_order
+            RENAME COLUMN message TO email;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-11-1">
+        <sql>
+            ALTER TABLE info_order
+            ADD COLUMN type varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-11-2">
+        <sql>
+            update info_order set type = 'CONSULTATION';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-15-1">
+        <sql>
+            ALTER TABLE bank_details
+            ADD COLUMN other_details varchar;
+            ALTER TABLE bank_details
+            ADD COLUMN other_format boolean;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-15-2">
+        <sql>
+            ALTER TABLE transfer_money
+            DROP COLUMN other_details;
+            ALTER TABLE transfer_money
+            DROP COLUMN other_format;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

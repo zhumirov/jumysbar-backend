@@ -1,0 +1,46 @@
+server.servlet.context-path: /api
+spring:
+  profiles:
+    active: local
+  datasource:
+    platform: postgresql
+  jpa:
+    properties:
+      hibernate:
+        order_by.default_null_ordering: last
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        temp:
+          use_jdbc_metadata_defaults: false
+        hibernate:
+          ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    open-in-view: false
+  liquibase.change-log: classpath:/db/changelog/db.changelog-master.xml
+  liquibase:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+  mail:
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+  security.token.expire.time: 3600000000
+jumysbar:
+  kompra:
+    url: https://kompra.kz/api/v2/basic
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+  datalake:
+    user:
+      phone: "+77017690049"
+  bbb:
+    url: https://meet.jumysbar.kz/bigbluebutton/api
+    moderator-password: mp
+    attendee-password: ap
+    shared-secret: ls8p3qdw7BCnuTbdEHyG8DG4T0GAhCljX00n8YQv8
+  bitrix:
+    url: https://btse.bitrix24.kz/rest/186/ktto50tuldau7x7e/crm.lead.add.json?FIELDS[TITLE]=JB-test&FIELDS[NAME]=Иван&FIELDS[EMAIL][0][VALUE]=mail@example.com&FIELDS[PHONE][0][VALUE]=555888&PAGE=точкавхода
+apple:
+  url: https://appleid.apple.com/auth/token
+  publicKeyUrl: https://appleid.apple.com/auth/keys
+

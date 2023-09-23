@@ -1,0 +1,1408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="tkachev" id="2021-01-10-1">
+        <sql>
+            CREATE TABLE module (
+                id integer primary key,
+                user_id integer REFERENCES user_ed(id),
+                event_id integer REFERENCES event(id),
+                title varchar,
+                position integer,
+                created_date timestamp
+            );
+            CREATE SEQUENCE module_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-09-27-2">
+        <sql>
+            ALTER TABLE section
+            ADD COLUMN module_id integer REFERENCES module(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-01-27-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN free_steps boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-01-27-2">
+        <sql>
+            ALTER TABLE subsection
+            ADD COLUMN free boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-02-15-1">
+        <sql>
+            ALTER TABLE comment
+            RENAME TO review;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-02-15-2">
+        <sql>
+            ALTER SEQUENCE comment_seq
+            RENAME TO review_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-06-29-1">
+        <sql>
+            CREATE TABLE comment (
+            id integer primary key,
+            step_id integer not null REFERENCES subsection(id),
+            user_id integer not null REFERENCES user_ed(id),
+            thread_id integer REFERENCES comment(id),
+            file_id integer REFERENCES file_ed(id),
+            text varchar,
+            likes integer,
+            dislikes integer,
+            homework boolean,
+            status varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE comment_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-02-20-2">
+        <sql>
+            CREATE TABLE comment_like (
+            id integer primary key,
+            comment_id integer not null REFERENCES comment(id),
+            user_id integer not null REFERENCES user_ed(id),
+            value varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE com_like_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-02-20-3">
+        <sql>
+            ALTER TABLE comment_like
+            ADD CONSTRAINT unique_like UNIQUE (comment_id, user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-02-20-4">
+        <sql>
+            ALTER TABLE subsection
+            ADD COLUMN likes integer;
+            ALTER TABLE subsection
+            ADD COLUMN dislikes integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-02-20-5">
+        <sql>
+            CREATE TABLE step_like (
+            id integer primary key,
+            step_id integer not null REFERENCES subsection(id),
+            user_id integer not null REFERENCES user_ed(id),
+            value varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE step_like_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-02-20-6">
+        <sql>
+            ALTER TABLE step_like
+            ADD CONSTRAINT unique_step_like UNIQUE (step_id, user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-03-01-1">
+        <sql>
+            ALTER TABLE comment
+            ADD COLUMN last_modified_date timestamp;
+            ALTER TABLE comment
+            ADD COLUMN replied_to integer REFERENCES comment(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-01-1">
+        <sql>
+            ALTER TABLE comment
+            RENAME COLUMN replied_to TO answer_to_id;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-11-3">
+        <sql>
+            CREATE TABLE comment_files (
+            comment_id integer not null REFERENCES comment(id),
+            files integer not null REFERENCES file_ed(id)
+            );
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-04-11-2">
+        <sql>
+            ALTER TABLE comment
+            DROP COLUMN IF EXISTS file_id;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-05-01-1">
+        <sql>
+            update subsection
+            set units = '[]' where units is null;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-1">
+        <sql>
+            ALTER TABLE comment
+            ADD COLUMN lesson_id integer REFERENCES section(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-2">
+        <sql>
+            CREATE TABLE lesson_like (
+            id integer primary key,
+            lesson_id integer not null REFERENCES section(id),
+            user_id integer not null REFERENCES user_ed(id),
+            useful integer,
+            interest integer,
+            value varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE lesson_like_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-3">
+        <sql>
+            ALTER TABLE lesson_like
+            ADD CONSTRAINT unique_lesson_like UNIQUE (lesson_id, user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-4">
+        <sql>
+            ALTER TABLE comment
+            ALTER COLUMN step_id SET NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-5">
+        <sql>
+            ALTER TABLE section
+            ADD COLUMN likes integer;
+            ALTER TABLE section
+            ADD COLUMN dislikes integer;
+            ALTER TABLE section
+            ADD COLUMN useful double precision;
+            ALTER TABLE section
+            ADD COLUMN interest double precision;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-6">
+        <sql>
+            alter table comment alter column step_id drop not null;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-7">
+        <sql>
+            ALTER TABLE lesson_like
+            DROP COLUMN value;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-8">
+        <sql>
+            ALTER TABLE lesson_like
+            RENAME TO lesson_rating;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-15-9">
+        <sql>
+            ALTER TABLE section
+            DROP COLUMN likes;
+            ALTER TABLE section
+            DROP COLUMN dislikes;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-28-1">
+        <sql>
+            CREATE TABLE bookmark (
+            id integer primary key,
+            user_id integer not null REFERENCES user_ed(id),
+            comment_id integer REFERENCES comment(id),
+            created_date timestamp
+            );
+            CREATE SEQUENCE bookmark_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-28-2">
+        <sql>
+            ALTER TABLE bookmark
+            ADD CONSTRAINT unique_com_user UNIQUE (comment_id, user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-04-30-1">
+        <sql>
+            ALTER TABLE subscription
+            ADD COLUMN promocode_id integer REFERENCES promocode(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-05-18-1">
+        <sql>
+            DROP TABLE test;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-05-18-2">
+        <sql>
+            ALTER TABLE section
+            DROP COLUMN IF EXISTS tests_size;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-05-18-3">
+        <sql>
+            ALTER TABLE event_progress
+            DROP COLUMN IF EXISTS tests_size;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-05-18-4">
+        <sql>
+            ALTER TABLE event_progress
+            DROP COLUMN IF EXISTS tests;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-05-26-1">
+        <sql>
+            ALTER TABLE order_ed DROP CONSTRAINT order_ed_promocode_id_fkey;
+            ALTER TABLE order_ed ADD CONSTRAINT order_ed_promocode_id_fkey FOREIGN KEY (promocode_id) REFERENCES promocode (id);
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-02-25-1">
+        <sql>
+            CREATE TABLE invitation (
+            id integer primary key,
+            event_id integer REFERENCES event(id),
+            email varchar,
+            is_email_sent boolean,
+            created_date timestamp
+            );
+            CREATE SEQUENCE invitation_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-05-17-1">
+        <sql>
+            alter table review drop column text;
+
+            alter table review add what_good varchar;
+
+            alter table review add what_improve varchar;
+
+            alter table review add recommendations varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-05-17-3">
+        <sql>
+            alter table event add requirements jsonb;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-05-17-4">
+        <sql>
+            alter table event add auditory jsonb;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-05-17-5">
+        <sql>
+            alter table event add about_course jsonb;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-05-31-1">
+        <sql>
+            alter table registration rename to sms_code_verification;
+            alter table sms_code_verification add type varchar(50);
+            alter table sms_code_verification add expiration int;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-05-31-2">
+        <sql>
+            alter table user_ed add first_name varchar;
+            alter table user_ed add last_name varchar;
+            alter table user_ed add city varchar;
+            alter table user_ed add birthdate date;
+            alter table user_ed add activity varchar;
+            alter table user_ed add job varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-07-1">
+        <sql>
+            ALTER TABLE lesson_rating ALTER COLUMN lesson_id DROP NOT NULL;
+            ALTER TABLE step_like ALTER COLUMN step_id DROP NOT NULL;
+            ALTER TABLE comment_like ALTER COLUMN comment_id DROP NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-06-04-1">
+        <sql>
+            alter table invitation drop column email;
+            alter table invitation drop column is_email_sent;
+            alter table invitation add phone varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-12-1">
+        <sql>
+            ALTER TABLE event ADD COLUMN parent_id integer;
+            ALTER TABLE module ADD COLUMN parent_id integer;
+            ALTER TABLE section ADD COLUMN parent_id integer;
+            ALTER TABLE subsection ADD COLUMN parent_id integer;
+        </sql>
+    </changeSet>
+
+    <changeSet author="tkachev" id="2021-06-15-1">
+        <sql>
+            UPDATE event
+            SET parent_id = null
+            WHERE status='DRAFT';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-18-1">
+        <sql>
+            ALTER TABLE promocode ADD COLUMN parent_id integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-18-2">
+        <sql>
+            ALTER TABLE event ADD COLUMN promocode_id integer REFERENCES promocode(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-18-4">
+        <sql>
+            UPDATE event
+            SET promocode_id = (SELECT id FROM PROMOCODE where event_id = event.id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-18-5">
+        <sql>
+            ALTER TABLE promocode drop COLUMN event_id;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-18-6">
+        <sql>
+            ALTER TABLE promocode drop COLUMN general;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-21-1">
+        <sql>
+            CREATE TABLE plan (
+            id integer primary key,
+            event_id integer not null REFERENCES event(id),
+            user_id integer REFERENCES user_ed(id),
+            parent_id integer not null REFERENCES user_ed(id),
+            price integer,
+            title varchar,
+            description varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE plan_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-21-2">
+        <sql>
+            ALTER TABLE subscription add COLUMN plan_id integer REFERENCES user_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-21-3">
+        <sql>
+            ALTER TABLE order_ed add COLUMN plan_id integer REFERENCES user_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-21-4">
+        <sql>
+            alter table plan alter column event_id drop not null;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-21-5">
+        <sql>
+            alter table plan alter column parent_id drop not null;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-06-24-1">
+        <sql>
+            alter table event drop column acquired_skills;
+            alter table event add acquired_skills jsonb;
+            alter table event add course_fits jsonb;
+            alter table event add author_name varchar;
+            alter table event add author_description varchar;
+            alter table event add intro_video_url varchar;
+            alter table event add show_course_content boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-06-24-2">
+        <sql>
+            alter table event add sample_lesson_id integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-06-25-1">
+        <sql>
+            ALTER TABLE plan DROP CONSTRAINT plan_parent_id_fkey;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-06-28-1">
+        <sql>
+            alter table event drop column sample_lesson_id;
+            alter table event add sample_video_url varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-01-1">
+        <sql>
+            CREATE TABLE mentor (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer REFERENCES event(id),
+            phone varchar REFERENCES user_ed(phone),
+            created_date timestamp
+            );
+            CREATE SEQUENCE mentor_seq;
+            ALTER TABLE mentor
+            ADD CONSTRAINT unique_mentor_e_p UNIQUE (event_id, phone);
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-07-02-1">
+        <sql>
+            create table apple_test
+            (
+            id int,
+            request varchar
+            );
+            CREATE SEQUENCE apple_test_seq
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-03-1">
+        <sql>
+            ALTER TABLE event ADD platform varchar;
+            ALTER TABLE user_ed ADD platform varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-03-2">
+        <sql>
+            UPDATE event SET platform = 'JUMYSBAR';
+            UPDATE user_ed SET platform = 'JUMYSBAR';
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-07-03-4">
+        <sql>
+            DROP TABLE apple_test;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-14-1">
+        <sql>
+            ALTER TABLE user_ed ADD user_role varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-14-2">
+        <sql>
+            UPDATE user_ed
+            SET user_role = (select authority from authority where authority.user_id=user_ed.id );
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-14-3">
+        <sql>
+            ALTER TABLE event DROP COLUMN IF EXISTS external;
+            ALTER TABLE event DROP COLUMN IF EXISTS external_url;
+            ALTER TABLE event DROP COLUMN IF EXISTS external_org_info;
+            ALTER TABLE event DROP COLUMN IF EXISTS way;
+            ALTER TABLE event DROP COLUMN IF EXISTS repeat_type;
+            ALTER TABLE event DROP COLUMN IF EXISTS start_date;
+            ALTER TABLE event DROP COLUMN IF EXISTS start_time;
+            ALTER TABLE event DROP COLUMN IF EXISTS start_date_time;
+            ALTER TABLE event DROP COLUMN IF EXISTS end_date;
+            ALTER TABLE event DROP COLUMN IF EXISTS end_time;
+            ALTER TABLE event DROP COLUMN IF EXISTS end_date_time;
+            ALTER TABLE event DROP COLUMN IF EXISTS seats;
+            ALTER TABLE event DROP COLUMN IF EXISTS city;
+            ALTER TABLE event DROP COLUMN IF EXISTS address;
+            ALTER TABLE event DROP COLUMN IF EXISTS category;
+            ALTER TABLE event DROP COLUMN IF EXISTS sub_category;
+            ALTER TABLE event DROP COLUMN IF EXISTS type;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-14-4">
+        <sql>
+            DROP TABLE info_order;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2020-07-15-1">
+        <sql>
+            CREATE TABLE review_section (
+                id integer primary key,
+                user_id integer not null REFERENCES user_ed(id),
+                section_id integer not null REFERENCES section(id),
+                useful_rating integer,
+                interesting_rating integer,
+                text varchar,
+                created_date timestamp
+            );
+            CREATE SEQUENCE review_section_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-1">
+        <sql>
+            DROP TABLE authority;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-2">
+        <sql>
+            DROP TABLE transfer_money;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-3">
+        <sql>
+            DROP TABLE bank_details;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-4">
+        <sql>
+            DROP TABLE org_order_ed;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-5">
+        <sql>
+            DROP TABLE org_subscription;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-6">
+        <sql>
+            ALTER TABLE order_ed
+            DROP COLUMN IF EXISTS order_type;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-7">
+        <sql>
+            ALTER TABLE order_ed
+            DROP COLUMN IF EXISTS certificate;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-8">
+        <sql>
+            DROP TABLE event_speakers;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-15-9">
+        <sql>
+            DROP TABLE certificate;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-16-0">
+        <sql>
+            DROP TABLE event_social_networks;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-16-1">
+        <sql>
+            DROP TABLE speaker;
+        </sql>
+    </changeSet>
+    <changeSet author="nurlan" id="2021-07-16-1">
+        <sql>
+            ALTER TABLE event ADD author_avatar_id integer REFERENCES file_ed(id);
+            ALTER TABLE event ADD author_video_url varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-11-1">
+        <sql>
+            ALTER TABLE comment DROP CONSTRAINT comment_step_id_fkey;
+            ALTER TABLE comment DROP CONSTRAINT comment_lesson_id_fkey;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-11-2">
+        <sql>
+            ALTER TABLE step_like DROP CONSTRAINT step_like_step_id_fkey;
+            ALTER TABLE lesson_rating DROP CONSTRAINT lesson_like_lesson_id_fkey;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-01-12-1">
+        <sql>
+            CREATE TABLE notification (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            text varchar,
+            status varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE notification_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-25-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN last_activity_date timestamp;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-25-2">
+        <sql>
+            update user_ed
+            set last_activity_date = created_date;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-25-3">
+        <sql>
+            ALTER TABLE subscription DROP CONSTRAINT subscription_plan_id_fkey;
+            ALTER TABLE order_ed DROP CONSTRAINT order_ed_plan_id_fkey;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-25-6">
+        <sql>
+            update order_ed set plan_id = null where (select count(id) from plan where plan.id=order_ed.plan_id) = 0;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-25-4">
+        <sql>
+            ALTER TABLE order_ed ADD CONSTRAINT order_ed_plan_id_fkey FOREIGN KEY (plan_id) REFERENCES plan (id);
+            ALTER TABLE subscription ADD CONSTRAINT subscription_plan_id_fkey FOREIGN KEY (plan_id) REFERENCES plan (id);
+        </sql>
+    </changeSet>
+
+    <changeSet author="tkachev" id="2021-09-03-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN email_confirmed boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-03-2">
+        <sql>
+            CREATE TABLE email_verification (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            uuid varchar,
+            confirmed boolean,
+            created_date timestamp
+            );
+            CREATE SEQUENCE email_ver_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-10-1">
+        <sql>
+            ALTER TABLE invitation
+            ADD COLUMN email varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-13-1">
+        <sql>
+            ALTER TABLE notification
+            ADD COLUMN sender_id integer REFERENCES user_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-14-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD CONSTRAINT unique_email UNIQUE (email);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-14-3">
+        <sql>
+            ALTER TABLE notification
+            ALTER COLUMN sender_id SET not null;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-15-1">
+    <sql>
+
+        ALTER TABLE section ADD column type varchar not null default 'LESSON';
+        ALTER TABLE section ADD column attempt integer;
+        ALTER TABLE section ADD column passing_score integer;
+        ALTER TABLE section ADD column duration integer;
+    </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-16-1">
+        <sql>
+            ALTER TABLE section DROP column attempt;
+            ALTER TABLE section DROP column passing_score;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-17-1">
+        <sql>
+            ALTER TABLE mentor DROP CONSTRAINT mentor_phone_fkey;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-20-1">
+        <sql>
+            ALTER TABLE event_progress
+            ADD COLUMN sections varchar default '[]';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-20-2">
+        <sql>
+            CREATE TABLE lesson_progress (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer REFERENCES event(id),
+            lesson_id integer REFERENCES section(id),
+            created_date timestamp,
+            finished_date timestamp
+            );
+            CREATE SEQUENCE les_progress_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-20-3">
+        <sql>
+            ALTER TABLE lesson_progress
+            ADD CONSTRAINT unique_user_lesson UNIQUE (lesson_id, user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-21-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN sequential_access boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-21-2">
+        <sql>
+            ALTER TABLE event
+            drop COLUMN free_steps;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-24-1">
+        <sql>
+            ALTER TABLE module
+            ADD COLUMN open_access boolean default true;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-09-30-1">
+        <sql>
+            CREATE TABLE exception_log (
+            id integer primary key,
+            message varchar,
+            stack_trace varchar,
+            viewed boolean,
+            created_date timestamp
+            );
+            CREATE SEQUENCE exp_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-01-1">
+        <sql>
+            ALTER TABLE lesson_progress DROP CONSTRAINT lesson_progress_lesson_id_fkey;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-06-1">
+        <sql>
+            ALTER TABLE event_progress
+            ADD COLUMN review varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-11-4">
+        <sql>
+            ALTER TABLE promocode
+            ADD COLUMN event_id integer REFERENCES event(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-11-5">
+        <sql>
+            update promocode set event_id = (select id from event where promocode_id=promocode.id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-11-6">
+        <sql>
+            ALTER TABLE event
+            DROP COLUMN promocode_id;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-11-2">
+        <sql>
+            ALTER TABLE promocode
+            ADD CONSTRAINT unique_title_event UNIQUE (event_id, title);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-11-3">
+        <sql>
+            ALTER TABLE promocode ALTER COLUMN title SET NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-12-1">
+        <sql>
+            ALTER TABLE plan
+            ADD COLUMN status varchar default 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-12-2">
+        <sql>
+            ALTER TABLE promocode
+            ADD COLUMN status varchar default 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-13-1">
+        <sql>
+            ALTER TABLE plan ADD CONSTRAINT parent_plan_id_fkey FOREIGN KEY (parent_id) REFERENCES plan (id);
+            ALTER TABLE promocode ADD CONSTRAINT parent_promocode_id_fkey FOREIGN KEY (parent_id) REFERENCES promocode (id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-20-1">
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_comment_user_id
+            ON comment(user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-20-2">
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_comment_step_id
+            ON comment(step_id);
+            CREATE INDEX IF NOT EXISTS idx_comment_lesson_id
+            ON comment(lesson_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-21-3">
+        <sql>
+            ALTER TABLE section ADD column test_size integer;
+            ALTER TABLE section ADD column score integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-21-1">
+        <sql>
+            ALTER TABLE section
+            RENAME COLUMN test_size TO exam_size;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-21-2">
+        <sql>
+            ALTER TABLE lesson_progress ADD column subsections varchar;
+            ALTER TABLE lesson_progress ADD column answers varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-21-6">
+        <sql>
+            update section
+            set score = 10 where type = 'EXAM';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-26-1">
+        <sql>
+            ALTER TABLE section ADD column passing_score integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-26-2">
+        <sql>
+            ALTER TABLE lesson_progress ADD column client_IP varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-29-1">
+        <sql>
+            CREATE TABLE certificate_settings (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer REFERENCES event(id),
+            title varchar,
+            description varchar,
+            author_name varchar,
+            totalResult boolean,
+            homework boolean,
+            exam boolean,
+            created_date timestamp
+            );
+            CREATE SEQUENCE cert_set_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-29-2">
+        <sql>
+            ALTER TABLE certificate_settings ADD column percentage_exam boolean;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-10-29-3">
+        <sql>
+            ALTER TABLE certificate_settings ADD column signature boolean;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-01-0">
+        <sql>
+            DROP SEQUENCE IF EXISTS cert_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-01-1">
+        <sql>
+            CREATE TABLE certificate (
+            id integer primary key,
+            user_id integer REFERENCES user_ed(id),
+            event_id integer REFERENCES event(id),
+            total_Result real,
+            resolved_total_Result real,
+            homework_size integer,
+            resolved_homework_size integer,
+            test_size real,
+            resolved_test_size real,
+            percentage_test_size real,
+            created_date timestamp
+            );
+            CREATE SEQUENCE cert_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-01-2">
+        <sql>
+            ALTER TABLE certificate_settings
+            RENAME COLUMN totalResult TO total_result;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-03-3">
+        <sql>
+            ALTER TABLE certificate
+            ADD CONSTRAINT unique_event_user UNIQUE (event_id, user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-05-1">
+        <sql>
+            ALTER TABLE certificate_settings ADD column file_id integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-03-7">
+        <sql>
+            ALTER TABLE certificate_settings
+            ADD CONSTRAINT unique_cert_set_event UNIQUE (event_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-10-1">
+        <sql>
+            update section
+            set type = 'EXAM' where type = 'TEST';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-21-1">
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_comment_like_user_id
+            ON comment_like(user_id);
+            CREATE INDEX IF NOT EXISTS idx_comment_like_comment_id
+            ON comment_like(comment_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-21-2">
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_step_like_user_id
+            ON step_like(user_id);
+            CREATE INDEX IF NOT EXISTS idx_step_like_step_id
+            ON step_like(step_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-21-3">
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_lesson_rating_user_id
+            ON lesson_rating(user_id);
+            CREATE INDEX IF NOT EXISTS idx_lesson_rating_lesson_id
+            ON lesson_rating(lesson_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-21-4">
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_user_phone
+            ON user_ed(phone);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-17-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN employee_id varchar;
+            ALTER TABLE user_ed
+            ADD COLUMN company varchar;
+            ALTER TABLE user_ed
+            ADD COLUMN position varchar;
+            ALTER TABLE user_ed
+            ADD COLUMN system_password boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-17-2">
+        <sql>
+            ALTER TABLE user_ed
+            ADD CONSTRAINT unique_employee_id UNIQUE (employee_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-17-3">
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_user_employee
+            ON user_ed(employee_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-11-25-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN phone_confirmed boolean default true;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-02-1">
+        <sql>
+            CREATE TABLE event_moderation (
+            id integer primary key,
+            event_id integer not null REFERENCES event(id) UNIQUE,
+            user_id integer not null REFERENCES user_ed(id),
+            status varchar,
+            comment varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE event_mod_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-12-09-1">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN identifier varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-01-18-1">
+        <sql>
+            CREATE TABLE subsection_view (
+            id integer primary key,
+            event_id integer not null,
+            subsection_id integer not null UNIQUE,
+            value integer,
+            created_date timestamp
+            );
+            CREATE SEQUENCE sub_view_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-01-18-2">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN aitu_user_id varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-01-29-1">
+        <sql>
+            CREATE TABLE subsection_unique_view (
+            id integer primary key,
+            user_id integer not null,
+            subsection_id integer not null,
+            value integer,
+            created_date timestamp,
+            UNIQUE (user_id, subsection_id)
+            );
+            CREATE SEQUENCE sub_uniq_view_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-01-29-2">
+        <sql>
+            ALTER TABLE subsection_unique_view
+            DROP COLUMN IF EXISTS value;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-02-08-1">
+        <sql>
+            ALTER TABLE comment
+            ADD COLUMN grade integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-02-08-2">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN homework_grade boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-02-08-3">
+        <sql>
+            ALTER TABLE event
+            DROP COLUMN IF EXISTS homework_grade;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-02-16-1">
+        <sql>
+            ALTER TABLE sms_code_verification
+            ADD COLUMN user_id integer REFERENCES user_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-03-28-1">
+        <sql>
+            ALTER TABLE event_progress
+            ADD COLUMN last_step_id integer;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-04-11-1">
+        <sql>
+            CREATE TABLE kassa_info (
+            id integer primary key,
+            token varchar,
+            id_kkm integer,
+            id_shift integer,
+            uid varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE kassa_info_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-04-13-1">
+        <sql>
+            CREATE TABLE kassa_check (
+            id integer primary key,
+            user_id integer not null,
+            event_id integer not null,
+            url varchar,
+            receipt varchar,
+            id_document integer,
+            created_date timestamp
+            );
+            CREATE SEQUENCE kassa_check_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-04-14-1">
+        <sql>
+            ALTER TABLE subscription
+            ADD CONSTRAINT unique_subscription UNIQUE (event_id, user_id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-04-28-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN start_date varchar;
+            ALTER TABLE event
+            ADD COLUMN end_date varchar;
+            ALTER TABLE event
+            ADD COLUMN calendar boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-04-28-2">
+        <sql>
+            ALTER TABLE module
+            ADD COLUMN start_date varchar;
+            ALTER TABLE module
+            ADD COLUMN end_date varchar;
+            ALTER TABLE module
+            ADD COLUMN calendar boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-04-29-1">
+        <sql>
+            CREATE TABLE invite_link (
+            id integer primary key,
+            event_id integer REFERENCES event(id),
+            uuid varchar not null UNIQUE,
+            status varchar,
+            type varchar,
+            created_date timestamp
+            );
+            CREATE SEQUENCE inv_link_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-05-12-1">
+        <sql>
+            ALTER TABLE invite_link
+            ALTER COLUMN type SET NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-05-13-1">
+        <sql>
+            CREATE UNIQUE INDEX uniq_homework ON comment (step_id, user_id)
+            WHERE homework;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-05-31">
+        <sql>
+            ALTER TABLE user_ed
+            ADD COLUMN aitu_token_id varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-07-15-1">
+        <sql>
+            ALTER TABLE module
+            ADD COLUMN hidden boolean;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-07-15-2">
+        <sql>
+            ALTER TABLE section
+            ADD COLUMN hidden boolean;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-07-15-3">
+        <sql>
+            ALTER TABLE subsection
+            ADD COLUMN hidden boolean;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-25-1">
+        <sql>
+            ALTER TABLE module
+            ADD COLUMN status varchar default 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-25-2">
+        <sql>
+            ALTER TABLE section
+            ADD COLUMN status varchar default 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-07-25-3">
+        <sql>
+            ALTER TABLE subsection
+            ADD COLUMN status varchar default 'NEW';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-07-29-1">
+        <sql>
+            CREATE TABLE check_kassa (
+            id integer primary key,
+            check_number varchar UNIQUE,
+            published boolean,
+            created_date timestamp
+            );
+            CREATE SEQUENCE check_kassa_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-08-10-1">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN category varchar default 'Все';
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-08-10-2">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN level varchar default 'Всем';
+        </sql>
+    </changeSet>
+<!--    <changeSet author="tkachev" id="2022-08-23-1">-->
+<!--        <sql>-->
+<!--            ALTER TABLE user_ed DROP CONSTRAINT unique_email;-->
+<!--            ALTER TABLE user_ed DROP CONSTRAINT unique_phone;-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+<!--    <changeSet author="tkachev" id="2022-08-23-2">-->
+<!--        <sql>-->
+<!--            ALTER TABLE user_ed-->
+<!--            ADD CONSTRAINT unique_phone_p UNIQUE (phone, platform);-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+<!--    <changeSet author="tkachev" id="2022-08-23-3">-->
+<!--        <sql>-->
+<!--            ALTER TABLE user_ed-->
+<!--            ADD CONSTRAINT unique_email_p UNIQUE (email, platform);-->
+<!--        </sql>-->
+<!--    </changeSet>-->
+    <changeSet author="tkachev" id="2021-08-27-1">
+        <sql>
+            CREATE TABLE category (
+            id integer primary key,
+            rus varchar,
+            kaz varchar,
+            eng varchar);
+            CREATE SEQUENCE category_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-27-2">
+        <sql>
+            INSERT INTO category VALUES (1, 'Все', 'Барлық', 'All');
+            INSERT INTO category VALUES (2, 'Программирование', 'Бағдарламалау', 'Programming');
+            INSERT INTO category VALUES (3, 'Маркетинг', 'Маркетинг', 'Marketing');
+            INSERT INTO category VALUES (4, 'Управление', 'Бақылау', 'Control');
+            INSERT INTO category VALUES (5, 'Преподавание', 'Оқыту', 'Teaching');
+            INSERT INTO category VALUES (6, 'Разное', 'Әртүрлі', 'Miscellaneous');
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-27-3">
+        <sql>
+            CREATE TABLE level (
+            id integer primary key,
+            rus varchar,
+            kaz varchar,
+            eng varchar);
+            CREATE SEQUENCE level_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-27-4">
+        <sql>
+            INSERT INTO level VALUES (1, 'Всем', 'Барлығы', 'Everyone');
+            INSERT INTO level VALUES (2, 'Для новичков', 'Для новичков', 'For newbies');
+            INSERT INTO level VALUES (3, 'Для продвинутых', 'Жетілдірілгендер үшін', 'For advanced');
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-27-5">
+        <sql>
+            ALTER TABLE event
+            DROP COLUMN IF EXISTS category;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-27-6">
+        <sql>
+            ALTER TABLE event
+            DROP COLUMN IF EXISTS level;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-27-7">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN category_id varchar default 1;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2021-08-27-8">
+        <sql>
+            ALTER TABLE event
+            ADD COLUMN level_id varchar default 1;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-10-19-1">
+        <sql>
+            ALTER TABLE user_ed DROP CONSTRAINT unique_email;
+            ALTER TABLE user_ed DROP CONSTRAINT unique_phone;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-10-19-2">
+        <sql>
+            ALTER TABLE user_ed
+            ADD CONSTRAINT unique_phone_platform UNIQUE (phone, platform);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-10-19-3">
+        <sql>
+            ALTER TABLE user_ed
+            ADD CONSTRAINT unique_email_platform UNIQUE (email, platform);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-10-31-1">
+        <sql>
+            DROP TABLE bookmark;
+            DROP SEQUENCE IF EXISTS bookmark_seq;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-11-03-1">
+        <sql>
+            ALTER TABLE section
+            ADD COLUMN review boolean default false;
+            ALTER TABLE section
+            ADD COLUMN exam_review boolean default false;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-11-10-1">
+        <sql>
+            ALTER TABLE event DROP CONSTRAINT event_author_avatar_id_fkey;
+            ALTER TABLE event ALTER COLUMN author_avatar_id type varchar;
+            ALTER TABLE event DROP CONSTRAINT event_file_id_fkey;
+            ALTER TABLE event ALTER COLUMN file_id type varchar;
+            ALTER TABLE comment_files DROP CONSTRAINT comment_files_files_fkey;
+            ALTER TABLE comment_files ALTER COLUMN files type varchar;
+            ALTER TABLE user_ed DROP CONSTRAINT user_ed_file_id_fkey;
+            ALTER TABLE user_ed ALTER COLUMN file_id type varchar;
+            ALTER TABLE file_ed ALTER COLUMN id type varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-11-10-2">
+        <sql>
+            ALTER TABLE event ADD FOREIGN KEY (author_avatar_id) REFERENCES file_ed(id);
+            ALTER TABLE event ADD FOREIGN KEY (file_id) REFERENCES file_ed(id);
+            ALTER TABLE comment_files ADD FOREIGN KEY (files) REFERENCES file_ed(id);
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-12-05-1">
+        <sql>
+            alter table certificate_settings add author_name2 varchar;
+            alter table certificate_settings add author_name3 varchar;
+            alter table certificate_settings add position2 varchar;
+            alter table certificate_settings add position3 varchar;
+            alter table certificate_settings add file_id2 varchar;
+            alter table certificate_settings add file_id3 varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-12-05-2">
+        <sql>
+            alter table certificate_settings add position varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-12-05-3">
+        <sql>
+            ALTER TABLE certificate_settings ALTER COLUMN file_id type varchar;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2022-12-05-4">
+        <sql>
+            ALTER TABLE event ADD COLUMN comment_likes boolean default true;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2020-12-28-1">
+        <sql>
+            ALTER TABLE event_progress
+            ADD COLUMN exam_subsections_size integer default 0;
+        </sql>
+    </changeSet>
+    <changeSet author="tkachev" id="2023-01-16-1">
+        <sql>
+            alter table certificate_settings add cert_name varchar;
+            alter table certificate_settings add confirm_info varchar;
+            alter table certificate_settings add logo_file_id varchar;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
